@@ -158,6 +158,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         shareButton.enabled = false
         cancelButton.enabled = false
         imagePickedFromCamera = false
+        scrollView.zoomScale = 1.0
     }
     
     func initializeTextfields() {
@@ -191,7 +192,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
     }
     
     func textFieldDidBeginEditing(textField: UITextField) {
-        // for some reason the textfield loses the black outline if no text is added. Need to re-init the attributes
+        // for some reason the textfield loses the black outline if no text is added. Need to re-init the attributes.
         self.initializeTextfields()
         
         if (textField == bottomText) {
@@ -230,7 +231,8 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        if (moveKeyboard) {
+        // the behavior of iPhone6 and iPhone6s (at least in the simulator) is different. Check for y<0.0 before moving view.
+        if (moveKeyboard && self.view.frame.origin.y < 0.0) {
             self.view.frame.origin.y += getKeyboardHeight(notification)
         }
     }
