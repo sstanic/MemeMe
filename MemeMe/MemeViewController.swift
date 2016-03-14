@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIScrollViewDelegate {
+class MemeViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIScrollViewDelegate {
 
     // remark: Udacity launch image is used only for design, could be removed
     
@@ -22,10 +22,11 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var shareButton: UIBarButtonItem!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
-    @IBOutlet weak var fitButton: UIBarButtonItem!
     
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var toolBar: UIToolbar!
+    
+    var meme: Meme!
     
     // only bottom textfield will move keyboard up
     var moveKeyboard = false
@@ -61,21 +62,22 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         UIApplication.sharedApplication().statusBarHidden=true;
         
         // keyboard notifications
-        self.subscribeToKeyboardNotifications()
+        subscribeToKeyboardNotifications()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
         // keyboard notifications
-        self.unsubscribeFromKeyboardNotifications()
+        unsubscribeFromKeyboardNotifications()
     }
 
     // pick, cancel, share, fonts actions
     @IBAction func pickAnImage(sender: AnyObject) {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
-        self.presentViewController(pickerController, animated: true, completion: { self.checkCanCancel() })
+
+        presentViewController(pickerController, animated: true, completion: nil)
     }
     
     @IBAction func pickAnImageFromCamera(sender: AnyObject) {
@@ -84,17 +86,18 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
         pickerController.sourceType = UIImagePickerControllerSourceType.Camera
-        presentViewController(pickerController, animated: true, completion: { self.checkCanCancel() })
+
+        presentViewController(pickerController, animated: true, completion: nil)
     }
 
     @IBAction func cancelMeme(sender: AnyObject) {
-        self.initializeStartValues()
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func shareMeme(sender: AnyObject) {
         moveKeyboard = false
         
-        let meme = Meme(top: topText.text!, bottom: bottomText.text!, originalImage: self.imageView.image!, memedImage: createMemedImage())
+        let meme = Meme(top: topText.text!, bottom: bottomText.text!, originalImage: imageView.image!, memedImage: createMemedImage())
 
         let activityController = UIActivityViewController(activityItems: [meme.memedImage], applicationActivities: [])
         
@@ -117,12 +120,14 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
                         self.saveImage(meme.memedImage)
                     }
                     
+                    self.saveMeme(meme)
+                    self.meme = nil
                     self.initializeStartValues()
                 }
             }
         }
         
-        self.presentViewController(activityController, animated: true, completion: nil)
+        presentViewController(activityController, animated: true, completion: nil)
     }
 
     @IBAction func changeFont(sender: AnyObject) {
@@ -145,20 +150,30 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         }
         alertController.addAction(markerFeltWideAction)
 
-        self.presentViewController(alertController, animated: true, completion: nil)
+        presentViewController(alertController, animated: true, completion: nil)
     }
     
     // initialization
     func initializeStartValues() {
-        self.initializeTextfields()
-        
-        imageView.image = nil
-        topText.text = "TOP"
-        bottomText.text = "BOTTOM"
-        shareButton.enabled = false
-        cancelButton.enabled = false
+        // edit mode for already sent meme
+        if meme != nil {
+            topText.text = meme.top
+            bottomText.text = meme.bottom
+            imageView.image = meme.originalImage
+            shareButton.enabled = true
+        }
+        else { // new meme
+            imageView.image = nil
+            topText.text = "TOP"
+            bottomText.text = "BOTTOM"
+            shareButton.enabled = false
+        }
+
+        cancelButton.enabled = true // always enabled
         imagePickedFromCamera = false
         scrollView.zoomScale = 1.0
+        
+        initializeTextfields()
     }
     
     func initializeTextfields() {
@@ -181,7 +196,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             imageView.image = image
             shareButton.enabled = true
-            self.dismissViewControllerAnimated(true, completion: nil)
+            dismissViewControllerAnimated(true, completion: nil)
         }
     }
     
@@ -193,7 +208,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
     
     func textFieldDidBeginEditing(textField: UITextField) {
         // for some reason the textfield loses the black outline if no text is added. Need to re-init the attributes.
-        self.initializeTextfields()
+        initializeTextfields()
         
         if (textField == bottomText) {
             moveKeyboard = true
@@ -201,10 +216,6 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         else {
             moveKeyboard = false
         }
-    }
-    
-    func textFieldDidEndEditing(textField: UITextField) {
-        self.checkCanCancel()
     }
     
     // gesture
@@ -226,14 +237,14 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
     func keyboardWillShow(notification: NSNotification) {
         // if text is edited and iphone is rotated, <keyboardWillShow> is called twice. Check for y=0.0 before moving view.
         if (moveKeyboard && self.view.frame.origin.y == 0.0) {
-            self.view.frame.origin.y -= getKeyboardHeight(notification)
+            view.frame.origin.y -= getKeyboardHeight(notification)
         }
     }
     
     func keyboardWillHide(notification: NSNotification) {
         // the behavior of iPhone6 and iPhone6s (at least in the simulator) is different. Check for y<0.0 before moving view.
         if (moveKeyboard && self.view.frame.origin.y < 0.0) {
-            self.view.frame.origin.y += getKeyboardHeight(notification)
+            view.frame.origin.y += getKeyboardHeight(notification)
         }
     }
     
@@ -243,9 +254,14 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         return keyboardSize.CGRectValue().height
     }
     
-    // memed image
+    // memes
     func saveImage(image: UIImage) {
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+    func saveMeme(meme: Meme) {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func createMemedImage() -> UIImage {
@@ -274,14 +290,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UINavigationControl
         }
         alertController.addAction(action)
         
-        self.presentViewController(alertController, animated: true, completion: nil)
-    }
-    
-    // cancel button enabled status
-    func checkCanCancel() {
-        cancelButton.enabled = topText.text!.characters.count > 0 ||
-            bottomText.text!.characters.count > 0 ||
-            imageView.image != nil
+        presentViewController(alertController, animated: true, completion: nil)
     }
 }
 
