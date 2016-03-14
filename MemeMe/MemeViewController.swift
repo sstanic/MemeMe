@@ -101,15 +101,14 @@ class MemeViewController: UIViewController, UITextFieldDelegate, UINavigationCon
         
         activityController.completionWithItemsHandler = {
             (activity, success, items, error) in
-            self.dismissViewControllerAnimated(true, completion: nil)
-            
             if let newError = error {
                 self.showAlert("Ooops an error occured: \(newError)")
             }
             else {
                 if (success) {
-                    // make this optional later (save original/meme/both/none)
+                    self.dismissViewControllerAnimated(true, completion: nil)
                     
+                    // make this optional later (save original/meme/both/none)
                     if (self.imagePickedFromCamera) {
                         self.saveImage(meme.originalImage)
                     }
