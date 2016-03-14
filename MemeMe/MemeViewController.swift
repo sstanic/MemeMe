@@ -61,14 +61,12 @@ class MemeViewController: UIViewController, UITextFieldDelegate, UINavigationCon
         
         UIApplication.sharedApplication().statusBarHidden=true;
         
-        // keyboard notifications
         subscribeToKeyboardNotifications()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        // keyboard notifications
+
         unsubscribeFromKeyboardNotifications()
     }
 

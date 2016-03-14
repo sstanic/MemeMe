@@ -1,3 +1,6 @@
-app icon created with Adobe Draw and https://makeappicon.com
-font icon source: http://findicons.com/
-several code snippets copied and adapted from http://stackoverflow.com (and Udacity of course)
+- app icon created with Adobe Draw and https://makeappicon.com
+- font icon source: http://findicons.com/
+- several code snippets copied and adapted from http://stackoverflow.com (and Udacity of course)
+
+enhancements
+- options-view for fonts, collection-view columns, save images (original/memed/both/none)

@@ -23,14 +23,15 @@ class SentMemesTableViewController: UITableViewController {
     }
     
     @IBAction func addMeme(sender: AnyObject) {
-        let newMemeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
-        
-        self.presentViewController(newMemeViewController, animated: true, completion: nil)
+        let memeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
+        presentViewController(memeViewController, animated: true, completion: nil)
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+        
         detailController.meme = self.memes[indexPath.row]
+        
         navigationController!.pushViewController(detailController, animated: true)
     }
     
@@ -47,10 +48,6 @@ class SentMemesTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return memes.count
-    }
-    
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
     }
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {

@@ -19,16 +19,17 @@ class SentMemesCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         
         // set dimension of collection items
-        // need to divide by 5 to get 4 items on the screen in portrait orientation
+        // need to divide by n+1 to get n items on the screen in portrait orientation
         let space: CGFloat = 2.0
+        let nrOfItems: CGFloat = 5.0
         
         // (simple) check for orientation to set the correct size
         var dimension: CGFloat!
         if (view.frame.size.width < view.frame.size.height) {
-            dimension = (view.frame.size.width - (2 * space)) / 5.0
+            dimension = (view.frame.size.width - (2 * space)) / nrOfItems
         }
         else {
-            dimension = (view.frame.size.height - (2 * space)) / 5.0
+            dimension = (view.frame.size.height - (2 * space)) / nrOfItems
         }
         
         flowLayout.minimumInteritemSpacing = space
@@ -42,14 +43,15 @@ class SentMemesCollectionViewController: UICollectionViewController {
     }
     
     @IBAction func addMeme(sender: AnyObject) {
-        let newMemeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
-        
-        self.presentViewController(newMemeViewController, animated: true, completion: nil)
+        let memeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
+        presentViewController(memeViewController, animated: true, completion: nil)
     }
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+        
         detailController.meme = self.memes[indexPath.row]
+        
         navigationController!.pushViewController(detailController, animated: true)
     }
     
