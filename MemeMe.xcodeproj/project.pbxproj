@@ -121,6 +121,7 @@
 					12B432991C86A8CB00B3BF3F = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = D3XLMCMEYM;
+						LastSwiftMigration = 0830;
 					};
 				};
 			};
@@ -287,6 +288,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Sascha-Stanic.MemeMe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -301,6 +303,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Sascha-Stanic.MemeMe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

@@ -16,27 +16,27 @@ class SentMemesTableViewController: UITableViewController {
         super.viewDidLoad()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         loadMemes()
     }
     
-    @IBAction func addMeme(sender: AnyObject) {
-        let memeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
-        presentViewController(memeViewController, animated: true, completion: nil)
+    @IBAction func addMeme(_ sender: AnyObject) {
+        let memeViewController = self.storyboard?.instantiateViewController(withIdentifier: "MemeViewController") as! MemeViewController
+        present(memeViewController, animated: true, completion: nil)
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let detailController = self.storyboard!.instantiateViewControllerWithIdentifier("MemeDetailViewController") as! MemeDetailViewController
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
         
         detailController.meme = self.memes[indexPath.row]
         
         navigationController!.pushViewController(detailController, animated: true)
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("tableViewCell", forIndexPath: indexPath) as! CustomTableViewCell
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! CustomTableViewCell
         
         let meme = memes[indexPath.item]
         
@@ -46,26 +46,26 @@ class SentMemesTableViewController: UITableViewController {
         return cell
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return memes.count
     }
     
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (editingStyle == .Delete) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
             
             // remove meme from meme-array
-            memes.removeAtIndex(indexPath.row)
-            (UIApplication.sharedApplication().delegate as! AppDelegate).memes.removeAtIndex(indexPath.row)
+            memes.remove(at: indexPath.row)
+            (UIApplication.shared.delegate as! AppDelegate).memes.remove(at: indexPath.row)
             
             // remove row from table view
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            tableView.deleteRows(at: [indexPath], with: .fade)
             
             loadMemes()
         }
     }
     
     func loadMemes() {
-        memes = (UIApplication.sharedApplication().delegate as! AppDelegate).memes
+        memes = (UIApplication.shared.delegate as! AppDelegate).memes
         tableView.reloadData()
     }
 }

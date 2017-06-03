@@ -15,18 +15,18 @@ class MemeDetailViewController: UIViewController {
     var meme: Meme!
     
     override func viewDidLoad() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editMeme")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(MemeDetailViewController.editMeme))
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         memeImage.image = meme.memedImage
     }
     
     func editMeme() {
-        let memeViewController = self.storyboard?.instantiateViewControllerWithIdentifier("MemeViewController") as! MemeViewController
+        let memeViewController = self.storyboard?.instantiateViewController(withIdentifier: "MemeViewController") as! MemeViewController
         
         memeViewController.meme = meme
         
-        presentViewController(memeViewController, animated: true, completion: nil)
+        present(memeViewController, animated: true, completion: nil)
     }
 }
